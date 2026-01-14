@@ -2,10 +2,10 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import streamlit as st
-import plotly.graph_objects as go
+import plotly. graph_objects as go
 from datetime import datetime
 import seaborn as sns
-import matplotlib.pyplot as plt
+import matplotlib. pyplot as plt
 
 # Configuration de la page Streamlit
 st.set_page_config(
@@ -16,7 +16,7 @@ st.set_page_config(
 )
 
 @st.cache_data
-def load_cpf_data(file_content: bytes, separator: str = ';', encoding: str = 'latin-1') -> pd.DataFrame:
+def load_cpf_data(file_content:  bytes, separator: str = ';', encoding: str = 'latin-1') -> pd.DataFrame:
     """Charge les données CPF depuis le contenu d'un fichier uploadé"""
     try:
         from io import BytesIO
@@ -36,7 +36,7 @@ def validate_file_format(df: pd.DataFrame) -> tuple[bool, list]:
     ]
     
     # Nettoyer les noms de colonnes pour la comparaison
-    df_columns = [col.strip().lower() for col in df.columns]
+    df_columns = [col. strip().lower() for col in df.columns]
     required_columns_lower = [col.lower() for col in required_columns]
     
     missing_columns = []
@@ -53,12 +53,12 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
         return df
     
     # Nettoyer les noms de colonnes (enlever les espaces)
-    df.columns = df.columns.str.strip()
+    df. columns = df.columns.str.strip()
     
     # Valider le format
     is_valid, missing_columns = validate_file_format(df)
     if not is_valid:
-        st.error(f"❌ Colonnes manquantes dans le fichier : {', '.join(missing_columns)}")
+        st.error(f"Colonnes manquantes dans le fichier :  {', '.join(missing_columns)}")
         st.info("Vérifiez que votre fichier contient toutes les colonnes requises.")
         return pd.DataFrame()
     
@@ -80,19 +80,19 @@ def calculate_kpis(df: pd.DataFrame) -> dict:
         return {}
     
     kpis = {
-        'total_entrees': int(df['entrees_formation'].sum()),
+        'total_entrees': int(df['entrees_formation']. sum()),
         'total_sorties_totales': int(df['sorties_realisation_totale'].sum()),
-        'total_sorties_partielles': int(df['sorties_realisation_partielle'].sum()),
+        'total_sorties_partielles': int(df['sorties_realisation_partielle']. sum()),
         'nb_organismes': df['raison_sociale_of_contractant'].nunique(),
         'nb_certifications': df['intitule_certification'].nunique(),
-        'taux_reussite': (df['sorties_realisation_totale'].sum() / df['entrees_formation'].sum() * 100) if df['entrees_formation'].sum() > 0 else 0
+        'taux_reussite': (df['sorties_realisation_totale']. sum() / df['entrees_formation'].sum() * 100) if df['entrees_formation']. sum() > 0 else 0
     }
     
     return kpis
 
 def create_certification_chart(df: pd.DataFrame) -> go.Figure:
     """Crée un graphique des top certifications"""
-    cert_data = df.groupby('intitule_certification').agg({
+    cert_data = df. groupby('intitule_certification').agg({
         'entrees_formation': 'sum',
         'sorties_realisation_totale': 'sum'
     }).reset_index()
@@ -125,12 +125,12 @@ def create_certification_chart(df: pd.DataFrame) -> go.Figure:
 def create_monthly_trend(df: pd.DataFrame) -> go.Figure:
     """Crée un graphique de tendance mensuelle"""
     monthly_data = df.groupby('annee_mois').agg({
-        'entrees_formation': 'sum',
-        'sorties_realisation_totale': 'sum'
+        'entrees_formation':  'sum',
+        'sorties_realisation_totale':  'sum'
     }).reset_index()
     
     fig = go.Figure()
-    fig.add_trace(go.Scatter(
+    fig.add_trace(go. Scatter(
         x=monthly_data['annee_mois'],
         y=monthly_data['entrees_formation'],
         mode='lines+markers',
@@ -158,7 +158,7 @@ def analyze_market_segments(df: pd.DataFrame) -> dict:
     """Analyse les segments de marché par type de référentiel"""
     segments = {}
     
-    for ref_type in df['type_referentiel'].unique():
+    for ref_type in df['type_referentiel']. unique():
         segment_data = df[df['type_referentiel'] == ref_type]
         
         # Présence AFPA dans ce segment
@@ -192,7 +192,7 @@ def create_competitor_comparison_chart(df: pd.DataFrame) -> go.Figure:
     top_orgs = top_orgs.sort_values('entrees_formation', ascending=False).head(10)
     
     # Créer le graphique en barres
-    fig = go.Figure()
+    fig = go. Figure()
     
     # Colorer AFPA différemment
     colors = ['red' if org == 'AFPA ENTREPRISES' else 'lightblue' for org in top_orgs['raison_sociale_of_contractant']]
@@ -221,11 +221,11 @@ def create_competitor_comparison_chart(df: pd.DataFrame) -> go.Figure:
 def main():
     """Fonction principale de l'application Streamlit"""
     
-    st.title("📊 Analyse des données CPF - Organismes de Formation")
+    st.title("Analyse des données CPF - Organismes de Formation")
     st.markdown("---")
     
     # Section de chargement de fichier
-    st.subheader("📁 Chargement des données")
+    st.subheader("Chargement des données")
     
     uploaded_file = st.file_uploader(
         "Choisissez votre fichier de données CPF",
@@ -234,8 +234,8 @@ def main():
     )
     
     if uploaded_file is None:
-        st.info("👆 Veuillez charger un fichier CSV pour commencer l'analyse.")
-        st.markdown("### 📋 Format de fichier attendu")
+        st.info("Veuillez charger un fichier CSV pour commencer l'analyse.")
+        st.markdown("### Format de fichier attendu")
         st.markdown("Le fichier CSV doit contenir les colonnes suivantes :")
         
         expected_columns = [
@@ -245,15 +245,15 @@ def main():
             "sorties_realisation_totale", "date_chargement"
         ]
         
-        col1, col2 = st.columns(2)
+        col1, col2 = st. columns(2)
         with col1:
-            for col in expected_columns[:5]:
+            for col in expected_columns[: 5]:
                 st.write(f"• `{col}`")
         with col2:
             for col in expected_columns[5:]:
                 st.write(f"• `{col}`")
         
-        st.markdown("### 📝 Instructions")
+        st.markdown("### Instructions")
         st.write("1. Le fichier doit être au format CSV")
         st.write("2. Le séparateur peut être `;` ou `,`")
         st.write("3. L'encodage peut être UTF-8 ou Latin-1")
@@ -268,7 +268,7 @@ def main():
             file_content = uploaded_file.read()
             
             # Essayer UTF-8 d'abord
-            try:
+            try: 
                 content_str = file_content.decode('utf-8')
                 encoding = 'utf-8'
             except UnicodeDecodeError:
@@ -276,7 +276,7 @@ def main():
                 encoding = 'latin-1'
             
             # Détecter le séparateur
-            if ';' in content_str[:1000]:
+            if ';' in content_str[: 1000]:
                 separator = ';'
             else:
                 separator = ','
@@ -289,7 +289,7 @@ def main():
             df = clean_data(df)
             
             # Afficher les informations sur le fichier chargé
-            col_info1, col_info2, col_info3, col_info4 = st.columns(4)
+            col_info1, col_info2, col_info3, col_info4 = st. columns(4)
             with col_info1:
                 st.metric("Lignes", f"{len(df):,}")
             with col_info2:
@@ -297,25 +297,25 @@ def main():
             with col_info3:
                 st.metric("Séparateur", f"'{separator}'")
             with col_info4:
-                st.metric("Encodage", encoding)
+                st. metric("Encodage", encoding)
             
-            st.success(f"✅ Fichier '{uploaded_file.name}' chargé avec succès !")
+            st.success(f"Fichier '{uploaded_file.name}' chargé avec succès !")
             
             # Afficher un aperçu des données
-            with st.expander("👁️ Aperçu des données (5 premières lignes)"):
-                st.dataframe(df.head(), width='stretch')
+            with st.expander("Aperçu des données (5 premières lignes)"):
+                st.dataframe(df. head(), width='stretch')
             
         except Exception as e:
-            st.error(f"❌ Erreur lors du chargement du fichier : {e}")
+            st.error(f"Erreur lors du chargement du fichier : {e}")
             st.info("Vérifiez que votre fichier respecte le format attendu.")
             return
     
     if df.empty:
-        st.error("❌ Le fichier chargé ne contient pas de données valides.")
+        st.error("Le fichier chargé ne contient pas de données valides.")
         return
     
     # Sidebar pour les filtres
-    st.sidebar.header("🔍 Filtres")
+    st.sidebar.header("Filtres")
     
     # Filtre par organisme de formation
     all_organisms = ['Tous'] + sorted(df['raison_sociale_of_contractant'].unique())
@@ -326,7 +326,7 @@ def main():
     )
     
     # Filtre par année
-    years = sorted(df['annee'].unique())
+    years = sorted(df['annee']. unique())
     selected_years = st.sidebar.multiselect(
         "Années:",
         years,
@@ -341,12 +341,12 @@ def main():
     )
     
     # Filtre par intitulé de certification avec recherche
-    st.sidebar.subheader("🎓 Certification")
+    st.sidebar.subheader("Certification")
     
     # Champ de recherche pour les certifications
     search_certification = st.sidebar.text_input(
         "Rechercher une certification:",
-        placeholder="Tapez pour rechercher...",
+        placeholder="Tapez pour rechercher.. .",
         help="Recherche dans les noms de certification"
     )
     
@@ -367,12 +367,12 @@ def main():
     
     # Afficher le nombre de certifications trouvées
     if search_certification:
-        st.sidebar.caption(f"🔍 {len(all_certifications)-1} certification(s) trouvée(s)")
+        st.sidebar.caption(f"{len(all_certifications)-1} certification(s) trouvée(s)")
     
     # Application des filtres
-    filtered_df = df.copy()
+    filtered_df = df. copy()
     
-    if selected_organism != 'Tous':
+    if selected_organism != 'Tous': 
         filtered_df = filtered_df[filtered_df['raison_sociale_of_contractant'] == selected_organism]
     
     if selected_years:
@@ -381,7 +381,7 @@ def main():
     if selected_ref_type != 'Tous':
         filtered_df = filtered_df[filtered_df['type_referentiel'] == selected_ref_type]
     
-    if selected_certification != 'Toutes':
+    if selected_certification != 'Toutes': 
         filtered_df = filtered_df[filtered_df['intitule_certification'] == selected_certification]
     
     st.sidebar.markdown(f"**Données filtrées:** {len(filtered_df):,} lignes")
@@ -390,7 +390,7 @@ def main():
     kpis = calculate_kpis(filtered_df)
     
     if kpis:
-        st.subheader("📈 KPIs Principaux")
+        st.subheader("KPIs Principaux")
         
         col1, col2, col3, col4 = st.columns(4)
         
@@ -418,7 +418,7 @@ def main():
         with col4:
             st.metric(
                 label="Nb Certifications",
-                value=f"{kpis['nb_certifications']:,}",
+                value=f"{kpis['nb_certifications']: ,}",
                 delta=None
             )
         
@@ -449,7 +449,7 @@ def main():
         
         with col8:
             taux_partiel = (kpis['total_sorties_partielles'] / kpis['total_entrees'] * 100) if kpis['total_entrees'] > 0 else 0
-            st.metric(
+            st. metric(
                 label="Taux Réussite Partielle",
                 value=f"{taux_partiel:.1f}%",
                 delta=None
@@ -461,27 +461,27 @@ def main():
     col_chart1, col_chart2 = st.columns(2)
     
     with col_chart1:
-        st.subheader("📊 Top Certifications")
+        st.subheader("Top Certifications")
         if not filtered_df.empty:
             fig_cert = create_certification_chart(filtered_df)
             st.plotly_chart(fig_cert, width='stretch')
     
     with col_chart2:
-        st.subheader("📈 Tendance Mensuelle")
+        st.subheader("Tendance Mensuelle")
         if not filtered_df.empty:
             fig_trend = create_monthly_trend(filtered_df)
             st.plotly_chart(fig_trend, width='stretch')
     
     # Tableau détaillé
     st.markdown("---")
-    st.subheader("📋 Données Détaillées")
+    st.subheader("Données Détaillées")
     
     if not filtered_df.empty:
         # Agrégation par certification
         detail_data = filtered_df.groupby(['intitule_certification', 'raison_sociale_of_contractant']).agg({
             'entrees_formation': 'sum',
             'sorties_realisation_totale': 'sum',
-            'sorties_realisation_partielle': 'sum'
+            'sorties_realisation_partielle':  'sum'
         }).reset_index()
         
         detail_data['taux_reussite'] = (detail_data['sorties_realisation_totale'] / detail_data['entrees_formation'] * 100).round(1)
@@ -494,7 +494,7 @@ def main():
         # Option de téléchargement
         csv = detail_data.to_csv(index=False, encoding='utf-8-sig')
         st.download_button(
-            label="📥 Télécharger les données filtrées (CSV)",
+            label="Télécharger les données filtrées (CSV)",
             data=csv,
             file_name=f"cpf_analyse_{selected_organism}_{datetime.now().strftime('%Y%m%d')}.csv",
             mime="text/csv"
@@ -503,11 +503,11 @@ def main():
     # Informations sur la certification sélectionnée
     if selected_certification != 'Toutes':
         st.markdown("---")
-        st.subheader(f"🎓 Focus Certification: {selected_certification}")
+        st.subheader(f"Focus Certification: {selected_certification}")
         
         cert_data = filtered_df
         if not cert_data.empty:
-            col_cert1, col_cert2, col_cert3 = st.columns(3)
+            col_cert1, col_cert2, col_cert3 = st. columns(3)
             
             with col_cert1:
                 st.metric("Organismes proposant cette certification", 
@@ -515,7 +515,7 @@ def main():
             
             with col_cert2:
                 cert_entries = cert_data['entrees_formation'].sum()
-                cert_success = cert_data['sorties_realisation_totale'].sum()
+                cert_success = cert_data['sorties_realisation_totale']. sum()
                 cert_success_rate = (cert_success / cert_entries * 100) if cert_entries > 0 else 0
                 st.metric("Taux de réussite certification", f"{cert_success_rate:.1f}%")
             
@@ -526,17 +526,17 @@ def main():
             if len(cert_data) > 1:
                 st.write("**Top organismes pour cette certification:**")
                 top_orgs_cert = cert_data.groupby('raison_sociale_of_contractant')['entrees_formation'].sum().sort_values(ascending=False).head(5)
-                for org, count in top_orgs_cert.items():
+                for org, count in top_orgs_cert. items():
                     st.write(f"• {org}: {count:,} entrées")
     
     # Informations sur AFPA ENTREPRISES si sélectionné
     if selected_organism == 'AFPA ENTREPRISES':
         st.markdown("---")
-        st.subheader("🎯 Focus AFPA ENTREPRISES")
+        st.subheader("Focus AFPA ENTREPRISES")
         
         afpa_data = filtered_df
         
-        if not afpa_data.empty:
+        if not afpa_data. empty:
             # Top 5 des certifications AFPA
             top_afpa_cert = afpa_data.groupby('intitule_certification')['entrees_formation'].sum().sort_values(ascending=False).head()
             
@@ -549,7 +549,7 @@ def main():
             
             with col_afpa2:
                 # Répartition par type de référentiel
-                ref_repartition = afpa_data.groupby('type_referentiel')['entrees_formation'].sum()
+                ref_repartition = afpa_data. groupby('type_referentiel')['entrees_formation'].sum()
                 fig_pie = px.pie(
                     values=ref_repartition.values,
                     names=ref_repartition.index,
@@ -559,7 +559,7 @@ def main():
     
     # Analyse concurrentielle AFPA
     st.markdown("---")
-    st.subheader("🏆 Analyse Concurrentielle AFPA ENTREPRISES")
+    st.subheader("Analyse Concurrentielle AFPA ENTREPRISES")
     
     # Identifier les certifications où AFPA n'est pas présent
     afpa_certifications = set(df[df['raison_sociale_of_contractant'] == 'AFPA ENTREPRISES']['intitule_certification'].unique())
@@ -571,7 +571,7 @@ def main():
     top_missing = missing_opportunities.groupby('intitule_certification')['entrees_formation'].sum().sort_values(ascending=False).head(10)
     
     # Analyser les concurrents principaux
-    competitors_analysis = df[df['raison_sociale_of_contractant'] != 'AFPA ENTREPRISES'].groupby('raison_sociale_of_contractant').agg({
+    competitors_analysis = df[df['raison_sociale_of_contractant'] != 'AFPA ENTREPRISES']. groupby('raison_sociale_of_contractant').agg({
         'entrees_formation': 'sum',
         'sorties_realisation_totale': 'sum',
         'intitule_certification': 'nunique'
@@ -585,32 +585,32 @@ def main():
     col_comp1, col_comp2 = st.columns(2)
     
     with col_comp1:
-        st.subheader("🎯 Opportunités Manquées")
+        st.subheader("Opportunités Manquées")
         st.write("**Top 10 certifications populaires où AFPA n'est pas présent:**")
         
         if not top_missing.empty:
-            for i, (cert, entries) in enumerate(top_missing.items(), 1):
+            for i, (cert, entries) in enumerate(top_missing. items(), 1):
                 # Trouver le leader sur cette certification
-                cert_leaders = df[df['intitule_certification'] == cert].groupby('raison_sociale_of_contractant')['entrees_formation'].sum().sort_values(ascending=False).head(1)
+                cert_leaders = df[df['intitule_certification'] == cert]. groupby('raison_sociale_of_contractant')['entrees_formation'].sum().sort_values(ascending=False).head(1)
                 leader = cert_leaders.index[0] if len(cert_leaders) > 0 else "N/A"
                 leader_entries = cert_leaders.iloc[0] if len(cert_leaders) > 0 else 0
                 
-                with st.expander(f"{i}. {cert[:50]}... ({entries:,} entrées totales)"):
-                    st.write(f"**Leader:** {leader}")
+                with st.expander(f"{i}. {cert[: 50]}...  ({entries:,} entrées totales)"):
+                    st. write(f"**Leader:** {leader}")
                     st.write(f"**Entrées leader:** {leader_entries:,}")
                     
                     # Top 3 organismes sur cette certification
-                    top_orgs = df[df['intitule_certification'] == cert].groupby('raison_sociale_of_contractant')['entrees_formation'].sum().sort_values(ascending=False).head(3)
+                    top_orgs = df[df['intitule_certification'] == cert].groupby('raison_sociale_of_contractant')['entrees_formation']. sum().sort_values(ascending=False).head(3)
                     st.write("**Top 3 organismes:**")
                     for j, (org, count) in enumerate(top_orgs.items(), 1):
-                        st.write(f"  {j}. {org}: {count:,}")
+                        st. write(f"  {j}. {org}: {count:,}")
     
     with col_comp2:
-        st.subheader("🏢 Principaux Concurrents")
+        st.subheader("Principaux Concurrents")
         st.write("**Top 10 concurrents par volume d'entrées:**")
         
         for i, row in top_competitors.iterrows():
-            with st.expander(f"{row.name + 1}. {row['raison_sociale_of_contractant'][:40]}..."):
+            with st.expander(f"{row. name + 1}. {row['raison_sociale_of_contractant'][:40]}..."):
                 col_a, col_b, col_c = st.columns(3)
                 with col_a:
                     st.metric("Entrées", f"{int(row['entrees_formation']):,}")
@@ -620,7 +620,7 @@ def main():
                     st.metric("Nb certifs", f"{int(row['intitule_certification'])}")
     
     # Analyse comparative détaillée
-    st.subheader("📊 Comparaison AFPA vs Concurrents")
+    st.subheader("Comparaison AFPA vs Concurrents")
     
     # Obtenir les stats AFPA
     afpa_stats = df[df['raison_sociale_of_contractant'] == 'AFPA ENTREPRISES'].agg({
@@ -630,16 +630,16 @@ def main():
     })
     afpa_taux = (afpa_stats['sorties_realisation_totale'] / afpa_stats['entrees_formation'] * 100).round(1)
     
-    col_comp_a, col_comp_b, col_comp_c, col_comp_d = st.columns(4)
+    col_comp_a, col_comp_b, col_comp_c, col_comp_d = st. columns(4)
     
-    with col_comp_a:
+    with col_comp_a: 
         st.metric(
             "Position AFPA (Entrées)",
-            value=f"#{df.groupby('raison_sociale_of_contractant')['entrees_formation'].sum().rank(ascending=False, method='min').get('AFPA ENTREPRISES', 'N/A'):.0f}",
+            value=f"#{df. groupby('raison_sociale_of_contractant')['entrees_formation'].sum().rank(ascending=False, method='min').get('AFPA ENTREPRISES', 'N/A'):.0f}",
             help="Position d'AFPA ENTREPRISES par rapport aux autres organismes"
         )
     
-    with col_comp_b:
+    with col_comp_b: 
         market_share = (afpa_stats['entrees_formation'] / df['entrees_formation'].sum() * 100).round(2)
         st.metric(
             "Part de marché AFPA",
@@ -653,7 +653,7 @@ def main():
         st.metric(
             "Taux vs Concurrents",
             value=f"{afpa_taux}%",
-            delta=f"{delta_rate:+.1f}% vs moyenne",
+            delta=f"{delta_rate: +.1f}% vs moyenne",
             help="Taux de réussite AFPA vs moyenne des concurrents"
         )
     
@@ -668,7 +668,7 @@ def main():
         )
     
     # Graphique de positionnement concurrentiel
-    st.subheader("📈 Positionnement Concurrentiel")
+    st.subheader("Positionnement Concurrentiel")
     
     # Créer un scatter plot des concurrents
     fig_scatter = go.Figure()
@@ -685,13 +685,13 @@ def main():
     ))
     
     # Point AFPA
-    fig_scatter.add_trace(go.Scatter(
+    fig_scatter.add_trace(go. Scatter(
         x=[afpa_stats['entrees_formation']],
         y=[afpa_taux],
         mode='markers',
         name='AFPA ENTREPRISES',
         text=['AFPA ENTREPRISES'],
-        hovertemplate='<b>%{text}</b><br>Entrées: %{x:,}<br>Taux réussite: %{y}%<extra></extra>',
+        hovertemplate='<b>%{text}</b><br>Entrées: %{x:,}<br>Taux réussite:  %{y}%<extra></extra>',
         marker=dict(size=15, color='red', symbol='star')
     ))
     
@@ -706,12 +706,12 @@ def main():
     st.plotly_chart(fig_scatter, width='stretch')
     
     # Graphique de comparaison des concurrents
-    st.subheader("🏢 Comparaison des Top Organismes")
+    st.subheader("Comparaison des Top Organismes")
     fig_competitors = create_competitor_comparison_chart(df)
     st.plotly_chart(fig_competitors, width='stretch')
     
     # Analyse par segment de marché
-    st.subheader("🎯 Analyse par Segment de Marché")
+    st.subheader("Analyse par Segment de Marché")
     segments = analyze_market_segments(df)
     
     # Créer un tableau de synthèse des segments
@@ -721,14 +721,14 @@ def main():
             'Type de Référentiel': ref_type,
             'Taille du Marché (entrées)': f"{data['total_entries']:,}",
             'Nb Organismes': data['nb_organisms'],
-            'Présence AFPA': '✅' if data['afpa_presence'] else '❌',
+            'Présence AFPA': 'Oui' if data['afpa_presence'] else 'Non',
             'Entrées AFPA': f"{data['afpa_entries']:,}" if data['afpa_presence'] else '0',
             'Leader du Segment': list(data['leaders'].keys())[0] if data['leaders'] else 'N/A',
             'Entrées Leader': f"{list(data['leaders'].values())[0]:,}" if data['leaders'] else '0'
         })
     
     segment_df = pd.DataFrame(segment_summary)
-    segment_df = segment_df.sort_values('Taille du Marché (entrées)', ascending=False, key=lambda x: x.str.replace(',', '').astype(int))
+    segment_df = segment_df.sort_values('Taille du Marché (entrées)', ascending=False, key=lambda x: x. str.replace(',', '').astype(int))
     
     st.dataframe(segment_df, width='stretch')
     
@@ -744,12 +744,12 @@ def main():
             })
     
     if opportunity_segments:
-        st.warning("⚠️ **Segments d'opportunité identifiés** (>1000 entrées, sans AFPA)")
+        st. warning("**Segments d'opportunité identifiés** (>1000 entrées, sans AFPA)")
         opportunity_df = pd.DataFrame(opportunity_segments)
         opportunity_df = opportunity_df.sort_values('entries', ascending=False)
         
         for _, opp in opportunity_df.head(5).iterrows():
-            st.write(f"🎯 **{opp['segment']}**: {opp['entries']:,} entrées/an (Leader: {opp['leader']}, {opp['leader_entries']:,} entrées)")
+            st.write(f"**{opp['segment']}**:  {opp['entries']:,} entrées/an (Leader: {opp['leader']}, {opp['leader_entries']:,} entrées)")
 
-if __name__ == "__main__":
+if __name__ == "__main__": 
     main()
